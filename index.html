@@ -1,1 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A Little Pocket of Us</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #faf8f5;
+      --warm-white: #f5f2ee;
+      --parchment: #ede8e0;
+      --taupe: #c4b9a8;
+      --warm-brown: #8a7968;
+      --deep-brown: #4a3f35;
+      --blush: #d9c4b8;
+      --text-main: #3a3330;
+      --text-soft: #7a6e68;
+      --text-lighter: #a89f98;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--cream);
+      color: var(--text-main);
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    /* ── GRAIN TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.5;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      animation: fadeUp 1.4s ease both;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 28px;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.4rem, 7vw, 4rem);
+      line-height: 1.2;
+      color: var(--deep-brown);
+      letter-spacing: 0.02em;
+      margin-bottom: 28px;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--warm-brown);
+    }
+
+    .hero-divider {
+      width: 48px;
+      height: 1px;
+      background: var(--taupe);
+      margin: 0 auto 28px;
+    }
+
+    .hero-note {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--text-soft);
+      max-width: 360px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 24px 120px;
+    }
+
+    /* ── ACCORDION SECTIONS ── */
+    .section {
+      margin-bottom: 16px;
+      border: 1px solid var(--parchment);
+      border-radius: 4px;
+      background: var(--warm-white);
+      overflow: hidden;
+      animation: fadeUp 1.4s ease both;
+    }
+    .section:nth-child(1) { animation-delay: 0.15s; }
+    .section:nth-child(2) { animation-delay: 0.3s; }
+    .section:nth-child(3) { animation-delay: 0.45s; }
+
+    .section-toggle {
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 28px 32px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .section-toggle:hover .section-label {
+      color: var(--deep-brown);
+    }
+
+    .section-label-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .section-hint {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--taupe);
+    }
+
+    .section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--warm-brown);
+      transition: color 0.3s ease;
+      line-height: 1.3;
+    }
+
+    .section-icon {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--taupe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.4s ease, background 0.3s ease;
+      color: var(--taupe);
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .section.open .section-icon {
+      transform: rotate(45deg);
+      background: var(--parchment);
+    }
+
+    .section-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-inner {
+      padding: 0 32px 36px;
+    }
+
+    /* ── WRITTEN NOTES ── */
+    .notes-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .note-card {
+      background: var(--cream);
+      border-left: 2px solid var(--blush);
+      padding: 20px 22px;
+      border-radius: 0 3px 3px 0;
+    }
+
+    .note-from {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 10px;
+    }
+
+    .note-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      color: var(--text-main);
+      line-height: 1.75;
+    }
+
+    /* ── VOICE MESSAGES ── */
+    .voice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .voice-item {
+      background: var(--cream);
+      border-radius: 3px;
+      padding: 18px 20px;
+    }
+
+    .voice-name {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 10px;
+    }
+
+    .voice-player {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .play-btn {
+      flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--warm-brown);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.25s ease, transform 0.2s ease;
+      color: white;
+    }
+
+    .play-btn:hover { background: var(--deep-brown); transform: scale(1.05); }
+    .play-btn:active { transform: scale(0.97); }
+
+    .play-btn svg { width: 14px; height: 14px; fill: white; }
+    .play-btn.playing .play-icon { display: none; }
+    .play-btn.playing .pause-icon { display: block !important; }
+
+    .progress-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 3px;
+      background: var(--parchment);
+      border-radius: 99px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--warm-brown);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.1s linear;
+      pointer-events: none;
+    }
+
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-lighter);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── SONG ── */
+    .song-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .song-link-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--cream);
+      border: 1px solid var(--parchment);
+      border-radius: 6px;
+      padding: 16px 18px;
+      text-decoration: none;
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .song-link-card:hover {
+      border-color: var(--taupe);
+      background: var(--warm-white);
+    }
+
+    .song-link-art {
+      flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+    }
+
+    .song-link-art svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .song-link-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .song-link-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--deep-brown);
+      line-height: 1.3;
+    }
+
+    .song-link-artist {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--taupe);
+      text-transform: uppercase;
+    }
+
+    .song-link-arrow {
+      font-size: 1rem;
+      color: var(--taupe);
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .song-link-card:hover .song-link-arrow {
+      transform: translateX(3px);
+      color: var(--warm-brown);
+    }
+
+    .song-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--text-soft);
+      text-align: center;
+    }
+
+    .song-embed-wrap {
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--parchment);
+      min-height: 152px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .song-embed-wrap iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
+    .song-placeholder {
+      text-align: center;
+      padding: 28px;
+      color: var(--text-lighter);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .song-placeholder strong {
+      display: block;
+      font-weight: 400;
+      color: var(--taupe);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 0 24px 60px;
+      animation: fadeUp 1.4s 0.6s ease both;
+    }
+
+    .footer-line {
+      width: 48px;
+      height: 1px;
+      background: var(--parchment);
+      margin: 0 auto 28px;
+    }
+
+    .footer-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--text-lighter);
+      max-width: 300px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── LOCK SCREEN ── */
+    #lock-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--cream);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      animation: fadeUp 1.2s ease both;
+    }
+
+    #lock-screen.unlocking {
+      animation: fadeOut 0.8s ease forwards;
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; pointer-events: none; }
+    }
+
+    .lock-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 24px;
+    }
+
+    .lock-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      color: var(--deep-brown);
+      text-align: center;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+
+    .lock-title em { font-style: italic; color: var(--warm-brown); }
+
+    .lock-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--taupe);
+      margin: 24px auto;
+    }
+
+    .lock-prompt {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--text-soft);
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .lock-input-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 260px;
+    }
+
+    #lock-input {
+      width: 100%;
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--taupe);
+      padding: 10px 4px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      color: var(--deep-brown);
+      text-align: center;
+      letter-spacing: 0.15em;
+      outline: none;
+      transition: border-color 0.25s ease;
+    }
+
+    #lock-input::placeholder { color: var(--taupe); font-style: italic; }
+    #lock-input:focus { border-color: var(--warm-brown); }
+
+    .lock-error {
+      font-size: 11px;
+      color: var(--blush);
+      letter-spacing: 0.1em;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      text-align: center;
+    }
+
+    .lock-error.visible { opacity: 1; }
+
+    #page-content { display: none; }
+    #page-content.revealed { display: block; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .section-toggle { padding: 22px 22px; }
+      .section-inner  { padding: 0 22px 28px; }
+      .hero { padding: 60px 20px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── LOCK SCREEN ── -->
+  <div id="lock-screen">
+    <p class="lock-eyebrow">just for you</p>
+    <h1 class="lock-title">A Little<br><em>Pocket of Us</em></h1>
+    <div class="lock-divider"></div>
+    <p class="lock-prompt">enter your word to open</p>
+    <div class="lock-input-wrap">
+      <input id="lock-input" type="text" placeholder="your word…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      <p class="lock-error" id="lock-error">that's not quite it, love</p>
+    </div>
+  </div>
+
+  <!-- ── PAGE CONTENT (hidden until unlocked) ── -->
+  <div id="page-content">
+
+  <!-- ── HERO ── -->
+  <header class="hero">
+    <p class="hero-eyebrow">for you, with love</p>
+    <h1 class="hero-title">A Little<br><em>Pocket of Us</em></h1>
+    <div class="hero-divider"></div>
+    <p class="hero-note">Open this whenever you need us. We're here — even when we can't be there.</p>
+  </header>
+
+  <!-- ── SECTIONS ── -->
+  <main>
+
+    <!-- SECTION 1: Written Notes -->
+    <div class="section" id="section-1">
+      <button class="section-toggle" onclick="toggleSection('section-1')" aria-expanded="false">
+        <div class="section-label-wrap">
+          <span class="section-hint">open when</span>
+          <span class="section-label">the day feels heavy</span>
+        </div>
+        <span class="section-icon">+</span>
+      </button>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="notes-grid">
+
+            <!-- Note from Melissa -->
+            <div class="note-card">
+              <p class="note-from">From Melissa</p>
+              <p class="note-text">Peach, my gal 🤍 sending you a deep breath in, and a deep breath out. May you be carried through this day gently, like the tide flowing in and out, through all that arises. As you come together with loved ones and unfamiliar faces, saying a prayer that you feel deep embrace, as you commune with Kate — all she has ever been, and all she will continue to be always. We love you so much, and are holding your hands through each step of this day from afar.</p>
+            </div>
+
+            <!-- Note from Diana -->
+            <div class="note-card">
+              <p class="note-from">From Diana</p>
+              <p class="note-text">What a gift to have had the friendship and love of Kate that you got to experience over the past years. I know that you will forever hold her in your heart. You are a gift to her family and I know that she is so grateful for your presence there now and in the time to come. You are cherished, loved, belong, and needed. I leave you with this blessing — <em>"May the road rise to meet you, may the wind be always at your back, may the sun shine warm upon your face, and until we meet again, may God hold you in the hollow of His hand."</em></p>
+            </div>
+
+            <!-- Note from Cherliza -->
+            <div class="note-card">
+              <p class="note-from">From Cherliza</p>
+              <p class="note-text">My love, if the day feels heavy, I hope these words help you find your center and breathe through the waves. You are held, even when everything feels like it's crashing at once, and it's okay to let whatever you're feeling move through you. As Rumi said so beautifully, <em>"The wound is the place where the Light enters you."</em> The depth of this grief is also the depth of the love you carry, and Kate's love will always be part of you.</p>
+            </div>
+
+            <!-- ✏️ Add more notes here if needed — copy this block -->
+            <!-- <div class="note-card">
+              <p class="note-from">From [Friend's Name]</p>
+              <p class="note-text">Your message here.</p>
+            </div> -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Voice Messages -->
+    <div class="section" id="section-2">
+      <button class="section-toggle" onclick="toggleSection('section-2')" aria-expanded="false">
+        <div class="section-label-wrap">
+          <span class="section-hint">open when you want to</span>
+          <span class="section-label">hear from us</span>
+        </div>
+        <span class="section-icon">+</span>
+      </button>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="voice-list">
+
+            <!-- Diana's voice note -->
+            <div class="voice-item">
+              <p class="voice-name">A message from Diana</p>
+              <div class="voice-player" data-src="Diana.m4a">
+                <button class="play-btn" onclick="togglePlay(this)">
+                  <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  <svg class="pause-icon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <div class="progress-wrap">
+                  <div class="progress-bar-bg" onclick="seekAudio(event, this)">
+                    <div class="progress-bar-fill"></div>
+                  </div>
+                  <div class="time-row">
+                    <span class="time-current">0:00</span>
+                    <span class="time-duration">–:––</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cherliza's voice note -->
+            <div class="voice-item">
+              <p class="voice-name">A message from Cherliza</p>
+              <div class="voice-player" data-src="Cherliza.m4a">
+                <button class="play-btn" onclick="togglePlay(this)">
+                  <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  <svg class="pause-icon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <div class="progress-wrap">
+                  <div class="progress-bar-bg" onclick="seekAudio(event, this)">
+                    <div class="progress-bar-fill"></div>
+                  </div>
+                  <div class="time-row">
+                    <span class="time-current">0:00</span>
+                    <span class="time-duration">–:––</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Melissa's voice note -->
+            <div class="voice-item">
+              <p class="voice-name">A message from Melissa</p>
+              <div class="voice-player" data-src="Melissa.m4a">
+                <button class="play-btn" onclick="togglePlay(this)">
+                  <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  <svg class="pause-icon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <div class="progress-wrap">
+                  <div class="progress-bar-bg" onclick="seekAudio(event, this)">
+                    <div class="progress-bar-fill"></div>
+                  </div>
+                  <div class="time-row">
+                    <span class="time-current">0:00</span>
+                    <span class="time-duration">–:––</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Song -->
+    <div class="section" id="section-3">
+      <button class="section-toggle" onclick="toggleSection('section-3')" aria-expanded="false">
+        <div class="section-label-wrap">
+          <span class="section-hint">open when you need</span>
+          <span class="section-label">a quiet moment</span>
+        </div>
+        <span class="section-icon">+</span>
+      </button>
+      <div class="section-body">
+        <div class="section-inner">
+          <div class="song-section">
+
+            <p class="song-label">We chose these for you.</p>
+
+            <a class="song-link-card" href="https://open.spotify.com/track/5PaMVKwU9grvLwb6oORlnm?si=61a3ae83901d488d" target="_blank" rel="noopener">
+              <div class="song-link-art">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M17.9 10.9C14.7 9 9.35 8.8 6.3 9.75c-.5.15-1-.15-1.15-.6-.15-.5.15-1 .6-1.15 3.55-1.05 9.4-.85 13.1 1.35.45.25.6.85.35 1.3-.25.35-.85.5-1.3.25zm-.1 2.8c-.25.4-.75.5-1.15.25-2.65-1.6-6.65-2.1-9.75-1.15-.4.1-.85-.1-.95-.5-.1-.4.1-.85.5-.95 3.55-1.1 7.95-.55 10.95 1.35.4.25.5.75.4 1zm-1.3 2.7c-.2.35-.6.45-.95.25-2.3-1.4-5.2-1.7-8.6-.95-.35.1-.7-.15-.8-.5-.1-.35.15-.7.5-.8 3.75-.85 6.95-.5 9.55 1.1.35.2.45.65.3.9z" fill="white"/></svg>
+              </div>
+              <div class="song-link-info">
+                <span class="song-link-title">The Banjo Song</span>
+                <span class="song-link-artist">Mumford & Sons</span>
+              </div>
+              <div class="song-link-arrow">→</div>
+            </a>
+
+            <a class="song-link-card" href="https://open.spotify.com/track/2S7slBXVQLbQUVW1ICWlvK?si=c3c249df31e94ef8" target="_blank" rel="noopener">
+              <div class="song-link-art">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M17.9 10.9C14.7 9 9.35 8.8 6.3 9.75c-.5.15-1-.15-1.15-.6-.15-.5.15-1 .6-1.15 3.55-1.05 9.4-.85 13.1 1.35.45.25.6.85.35 1.3-.25.35-.85.5-1.3.25zm-.1 2.8c-.25.4-.75.5-1.15.25-2.65-1.6-6.65-2.1-9.75-1.15-.4.1-.85-.1-.95-.5-.1-.4.1-.85.5-.95 3.55-1.1 7.95-.55 10.95 1.35.4.25.5.75.4 1zm-1.3 2.7c-.2.35-.6.45-.95.25-2.3-1.4-5.2-1.7-8.6-.95-.35.1-.7-.15-.8-.5-.1-.35.15-.7.5-.8 3.75-.85 6.95-.5 9.55 1.1.35.2.45.65.3.9z" fill="white"/></svg>
+              </div>
+              <div class="song-link-info">
+                <span class="song-link-title">Wawa by the Ocean</span>
+                <span class="song-link-artist">Mild High Club</span>
+              </div>
+              <div class="song-link-arrow">→</div>
+            </a>
+
+            <a class="song-link-card" href="https://open.spotify.com/track/4zA4VYiM01ClfpT5a47CAh?si=13cd353bdd314b21" target="_blank" rel="noopener">
+              <div class="song-link-art">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M17.9 10.9C14.7 9 9.35 8.8 6.3 9.75c-.5.15-1-.15-1.15-.6-.15-.5.15-1 .6-1.15 3.55-1.05 9.4-.85 13.1 1.35.45.25.6.85.35 1.3-.25.35-.85.5-1.3.25zm-.1 2.8c-.25.4-.75.5-1.15.25-2.65-1.6-6.65-2.1-9.75-1.15-.4.1-.85-.1-.95-.5-.1-.4.1-.85.5-.95 3.55-1.1 7.95-.55 10.95 1.35.4.25.5.75.4 1zm-1.3 2.7c-.2.35-.6.45-.95.25-2.3-1.4-5.2-1.7-8.6-.95-.35.1-.7-.15-.8-.5-.1-.35.15-.7.5-.8 3.75-.85 6.95-.5 9.55 1.1.35.2.45.65.3.9z" fill="white"/></svg>
+              </div>
+              <div class="song-link-info">
+                <span class="song-link-title">Pamplemousse</span>
+                <span class="song-link-artist">Flavien Berger</span>
+              </div>
+              <div class="song-link-arrow">→</div>
+            </a>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-line"></div>
+    <p class="footer-text">We love you. Come back here whenever you need us.</p>
+  </footer>
+
+  </div> <!-- /#page-content -->
+
+  <!-- ── JAVASCRIPT ── -->
+  <script>
+    // ── LOCK ───────────────────────────────────────────────────────────
+    const SECRET = 'bippa';
+    const lockScreen = document.getElementById('lock-screen');
+    const pageContent = document.getElementById('page-content');
+    const lockInput   = document.getElementById('lock-input');
+    const lockError   = document.getElementById('lock-error');
+
+    lockInput.focus();
+
+    lockInput.addEventListener('input', () => {
+      lockError.classList.remove('visible');
+      if (lockInput.value.trim().toLowerCase() === SECRET) {
+        lockScreen.classList.add('unlocking');
+        setTimeout(() => {
+          lockScreen.style.display = 'none';
+          pageContent.classList.add('revealed');
+        }, 800);
+      }
+    });
+
+    lockInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && lockInput.value.trim().toLowerCase() !== SECRET) {
+        lockError.classList.add('visible');
+        lockInput.value = '';
+      }
+    });
+    // ── ACCORDION ──────────────────────────────────────────────────────
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      const body    = section.querySelector('.section-body');
+      const btn     = section.querySelector('.section-toggle');
+      const isOpen  = section.classList.contains('open');
+
+      // Close all
+      document.querySelectorAll('.section').forEach(s => {
+        s.classList.remove('open');
+        s.querySelector('.section-body').style.maxHeight = '0';
+        s.querySelector('.section-toggle').setAttribute('aria-expanded', 'false');
+      });
+
+      // Open clicked (if it was closed)
+      if (!isOpen) {
+        section.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    // ── AUDIO PLAYERS ──────────────────────────────────────────────────
+    const audioMap = new Map(); // player el → Audio instance
+    let currentPlayer = null;
+
+    function getAudio(playerEl) {
+      if (!audioMap.has(playerEl)) {
+        const src   = playerEl.getAttribute('data-src');
+        const audio = new Audio(src);
+        const fill  = playerEl.querySelector('.progress-bar-fill');
+        const curr  = playerEl.querySelector('.time-current');
+        const dur   = playerEl.querySelector('.time-duration');
+
+        audio.addEventListener('loadedmetadata', () => {
+          dur.textContent = formatTime(audio.duration);
+        });
+        audio.addEventListener('timeupdate', () => {
+          const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+          fill.style.width = pct + '%';
+          curr.textContent = formatTime(audio.currentTime);
+        });
+        audio.addEventListener('ended', () => {
+          const btn = playerEl.querySelector('.play-btn');
+          btn.classList.remove('playing');
+          fill.style.width = '0%';
+          curr.textContent = '0:00';
+          currentPlayer = null;
+        });
+
+        audioMap.set(playerEl, audio);
+      }
+      return audioMap.get(playerEl);
+    }
+
+    function togglePlay(btn) {
+      const playerEl = btn.closest('.voice-player');
+      const audio    = getAudio(playerEl);
+
+      if (!audio.paused) {
+        audio.pause();
+        btn.classList.remove('playing');
+        currentPlayer = null;
+        return;
+      }
+
+      // Pause any other playing audio
+      if (currentPlayer && currentPlayer !== playerEl) {
+        const other    = audioMap.get(currentPlayer);
+        const otherBtn = currentPlayer.querySelector('.play-btn');
+        if (other) other.pause();
+        if (otherBtn) otherBtn.classList.remove('playing');
+      }
+
+      audio.play().catch(() => {
+        // File not found — show a gentle message in console
+        console.warn('Audio file not found. Make sure the file is in the same folder as this HTML.');
+      });
+      btn.classList.add('playing');
+      currentPlayer = playerEl;
+    }
+
+    function seekAudio(event, barEl) {
+      const playerEl = barEl.closest('.voice-player');
+      const audio    = getAudio(playerEl);
+      if (!audio.duration) return;
+      const rect = barEl.getBoundingClientRect();
+      const pct  = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      audio.currentTime = pct * audio.duration;
+    }
+
+    function formatTime(s) {
+      if (!s || isNaN(s)) return '0:00';
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60).toString().padStart(2, '0');
+      return `${m}:${sec}`;
+    }
+
+    // Re-calculate section max-height after fonts/images load (for smooth accordion)
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.section.open .section-body').forEach(b => {
+        b.style.maxHeight = b.scrollHeight + 'px';
+      });
+    });
+  </script>
+
+</body>
+</html>
+
+<!--
+════════════════════════════════════════════════════════════════════
+  HOW TO CUSTOMIZE THIS PAGE
+════════════════════════════════════════════════════════════════════
+
+  SECTION 1 — WRITTEN NOTES
+  ──────────────────────────
+  Search for "note-card" in the HTML. For each note, replace:
+  • [Friend's Name] → the actual name
+  • The placeholder text → 1–3 heartfelt sentences
+
+  To ADD a note, copy this entire block and paste it inside .notes-grid:
+    <div class="note-card">
+      <p class="note-from">From [Name]</p>
+      <p class="note-text">Your message here.</p>
+    </div>
+
+  To REMOVE a note, delete the whole <div class="note-card">…</div> block.
+
+
+  SECTION 2 — VOICE MESSAGES
+  ────────────────────────────
+  1. Record each voice note (Voice Memos on iPhone, or any app).
+     Export as .mp3 or .m4a (both work fine).
+  2. Name the files exactly: voice1.mp3, voice2.mp3, voice3.mp3
+     (or update the data-src="voice1.mp3" attributes to match your filenames).
+  3. Place the audio files in the SAME folder as this HTML file.
+  4. Replace [Friend's Name] in each .voice-name paragraph.
+
+  To ADD a voice message, copy a whole <div class="voice-item">…</div> block,
+  paste it inside .voice-list, update the name and data-src filename.
+
+
+  SECTION 3 — SONG
+  ──────────────────
+  Spotify:
+    1. Find the track on Spotify desktop or web.
+    2. Click the ··· menu → Share → Embed track.
+    3. Copy the iframe code.
+    4. Find <div class="song-embed-wrap"> in the HTML.
+    5. Replace the <div class="song-placeholder">…</div> inside it
+       with the copied iframe.
+
+  YouTube:
+    1. Open the video on YouTube.
+    2. Click Share → Embed.
+    3. Copy the <iframe> code.
+    4. Paste it inside <div class="song-embed-wrap">, same as above.
+
+  Also update the italic quote below the embed with a personal note
+  about why you chose this song (or delete that line entirely).
+
+
+  SHARING THE PAGE
+  ─────────────────
+  Option A — Simple: Put all files in one folder and zip it.
+    Send the zip; she unzips it and opens the .html file in any browser.
+    (Audio files must be in the same folder as the HTML.)
+
+  Option B — Free hosting (no login needed):
+    • Netlify Drop: drag the folder to drop.netlify.com → instant link
+    • Tiiny.host: upload the zip → get a shareable URL
+    Both are free and require no account for basic use.
+
+════════════════════════════════════════════════════════════════════
+-->
